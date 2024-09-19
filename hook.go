@@ -96,13 +96,16 @@ func (hook *SlsLogrusHook) SetSendInterval(interval time.Duration) {
 func (hook *SlsLogrusHook) Fire(entry *logrus.Entry) error {
 	const depth = 16
 	var pcs [depth]uintptr
-	n := runtime.Callers(6, pcs[:])
-	var location string
+	n := runtime.Callers(5, pcs[:])
+	locations := make([]string, 0)
 	for _, pc := range pcs[0:n] {
 		if !strings.HasPrefix(getFunctionName(pc), "github.com/sirupsen/logrus") {
 			file, line := getFileLocation(pc)
 			location = fmt.Sprintf("%s#%d", file, line)
-			break
+			locations = append(locations, fmt.Sprintf("%s#%d\n", file, line))
+			if len(locations) >= 2 {
+				break
+			}
 		}
 	}
 
@@ -114,8 +117,8 @@ func (hook *SlsLogrusHook) Fire(entry *logrus.Entry) error {
 				Value: proto.String(strings.ToUpper(entry.Level.String())),
 			},
 			{
-				Key:   proto.String("location"),
-				Value: proto.String(location),
+				Key:   proto.String("locations"),
+				Value: proto.String(fmt.Sprint(locations)),
 			},
 			{
 				Key:   proto.String("message"),
