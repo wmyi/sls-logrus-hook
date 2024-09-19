@@ -96,7 +96,7 @@ func (hook *SlsLogrusHook) SetSendInterval(interval time.Duration) {
 func (hook *SlsLogrusHook) Fire(entry *logrus.Entry) error {
 	const depth = 16
 	var pcs [depth]uintptr
-	n := runtime.Callers(5, pcs[:])
+	n := runtime.Callers(4, pcs[:])
 	var location string
 	for _, pc := range pcs[0:n] {
 		if !strings.HasPrefix(getFunctionName(pc), "github.com/sirupsen/logrus") {
