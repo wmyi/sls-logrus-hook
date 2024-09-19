@@ -101,7 +101,6 @@ func (hook *SlsLogrusHook) Fire(entry *logrus.Entry) error {
 	for _, pc := range pcs[0:n] {
 		if !strings.HasPrefix(getFunctionName(pc), "github.com/sirupsen/logrus") {
 			file, line := getFileLocation(pc)
-			location = fmt.Sprintf("%s#%d", file, line)
 			locations = append(locations, fmt.Sprintf("%s#%d\n", file, line))
 			if len(locations) >= 2 {
 				break
